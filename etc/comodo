@@ -1,0 +1,4 @@
+id=comodo
+ca_is_default=0
+ca_type=EXTERNAL
+ca_external_helper=/usr/libexec/certmonger/comodo_client.py
