@@ -1,7 +1,7 @@
 %define name certmonger-comodo-helper
 %define version 0.1.0
 %define unmangled_version 0.1.0
-%define release 4
+%define release 5
 # The description
 %define desc The certmonger_comodo_helper is a helper for certmonger that submits and gathers certificates from the Comodo API. It is written in python and requires the suds python library, it should be compatible with both python 3 and 2.
 # The summary
@@ -70,6 +70,9 @@ rm -rf $RPM_BUILD_ROOT
 %config /var/lib/certmonger/cas/comodo
 
 %changelog
+* Wed Sep 20 2017 looneytr - 0.1.0-5
+- Fix config files.
+
 * Wed Sep 20 2017 looneytr - 0.1.0-4
 - Add dependency on certmonger.
 
