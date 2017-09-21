@@ -113,7 +113,8 @@ class ComodoTLSService(ComodoCA):
     def poll(self):
         """
         Poll for certificate availability after submission.
-        :return:
+        :return: A string indicating the return collected from comodo API, and a system exit code.
+        :rtype: string
         """
         result = self.client.service.collect(authData=self.auth, id=self.env['CERTMONGER_CA_COOKIE'],
                                              formatType=ComodoCA.format_type['X509 PEM Certificate only'])
@@ -122,8 +123,9 @@ class ComodoTLSService(ComodoCA):
             print(result['SSL']['certificate'])
             sys.exit(0)
         elif result['statusCode'] == 0:
+            print(300)  # Wait 300 seconds to retry
             print(self.env['CERTMONGER_CA_COOKIE'])
-            sys.exit(1)
+            sys.exit(5)
         else:
             print(ComodoCA.status_code[result.statusCode])
             sys.exit(3)
@@ -138,7 +140,7 @@ class ComodoTLSService(ComodoCA):
         :param string cert_type_name: The full cert type name (Example: 'PlatinumSSL Certificate')
         :param string revoke_password: A password for certificate revocation
         :param int term: The length, in years, for the certificate to be issued
-        :return: A string indicating the certificate ID to be collected.
+        :return: A string indicating the certificate ID to be collected, and a system exit code.
         :rtype: string
         """
         cert_types = self.get_cert_types()
@@ -156,6 +158,7 @@ class ComodoTLSService(ComodoCA):
                                             serverType=ComodoCA.formats['Apache/ModSSL'], term=term, comments='')
 
         if result > 0:
+            print (300)  # Wait 300 seconds before polling
             print(result)
             sys.exit(1)
         else:
