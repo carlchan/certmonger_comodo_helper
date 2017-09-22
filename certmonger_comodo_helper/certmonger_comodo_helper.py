@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import os
 import suds.client
 import sys
@@ -116,6 +117,8 @@ class ComodoTLSService(ComodoCA):
         :return: A string indicating the return collected from comodo API, and a system exit code.
         :rtype: string
         """
+        poll_delay=300  # Delay in seconds to wait to poll the CA for the cert again.
+
         result = self.client.service.collect(authData=self.auth, id=self.env['CERTMONGER_CA_COOKIE'],
                                              formatType=ComodoCA.format_type['X509 PEM Certificate only'])
 
@@ -123,8 +126,8 @@ class ComodoTLSService(ComodoCA):
             print(result['SSL']['certificate'])
             sys.exit(0)
         elif result['statusCode'] == 0:
-            print(300)  # Wait 300 seconds to retry
-            print(self.env['CERTMONGER_CA_COOKIE'])
+            s = '{}\n{}'.format(poll_delay, self.env['CERTMONGER_CA_COOKIE'])
+            print(s, end="")
             sys.exit(5)
         else:
             print(ComodoCA.status_code[result.statusCode])
@@ -143,6 +146,8 @@ class ComodoTLSService(ComodoCA):
         :return: A string indicating the certificate ID to be collected, and a system exit code.
         :rtype: string
         """
+        poll_delay = 300  # Delay in seconds to wait to poll the CA for the cert again.
+
         cert_types = self.get_cert_types()
 
         for type in cert_types:
@@ -158,8 +163,8 @@ class ComodoTLSService(ComodoCA):
                                             serverType=ComodoCA.formats['Apache/ModSSL'], term=term, comments='')
 
         if result > 0:
-            print (300)  # Wait 300 seconds before polling
-            print(result)
+            s = '{}\n{}'.format(poll_delay, result)
+            print(s, end="")
             sys.exit(1)
         else:
             print(ComodoCA.status_code[result.statusCode])
