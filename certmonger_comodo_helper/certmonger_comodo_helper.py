@@ -126,8 +126,8 @@ class ComodoTLSService(ComodoCA):
             print(result['SSL']['certificate'])
             sys.exit(0)
         elif result['statusCode'] == 0:
-            s = '{}\n{}'.format(poll_delay, self.env['CERTMONGER_CA_COOKIE'])
-            print(s, end="")
+            print(poll_delay)
+            print(self.env['CERTMONGER_CA_COOKIE'])
             sys.exit(5)
         else:
             print(ComodoCA.status_code[result.statusCode])
@@ -163,9 +163,9 @@ class ComodoTLSService(ComodoCA):
                                             serverType=ComodoCA.formats['Apache/ModSSL'], term=term, comments='')
 
         if result > 0:
-            s = '{}\n{}'.format(poll_delay, result)
-            print(s, end="")
-            sys.exit(1)
+            print(poll_delay)
+            print(result)
+            sys.exit(5)
         else:
             print(ComodoCA.status_code[result.statusCode])
             sys.exit(2)
