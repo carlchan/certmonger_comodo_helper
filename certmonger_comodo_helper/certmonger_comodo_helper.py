@@ -7,7 +7,7 @@ import sys
 
 def get_environment():
     """
-    This method gathers the environment variables and returns only the
+    This function gathers the environment variables and returns only the
     environment variables matching 'CERTMONGER.*'
 
     :return: A dictionary containing all CERTMONGER env keys and values.
@@ -72,9 +72,10 @@ class ComodoTLSService(ComodoCA):
     """
 
     def __init__(self, customer_login_uri, org_id, password, secret_key, login,
-                 api_url='https://hard.cert-manager.com/ws/EPKIManagerSSL?wsdl'):
+                 api_url='https://hard.cert-manager.com/ws/EPKIManagerSSL?wsdl', ca_poll_wait=60):
         """
         :param string api_url: The full URL for the API server
+        :param int    ca_poll_wait: The period of time in seconds to wait until polling the CA for cert availability
         :param string customer_login_uri: The URI for the customer login (if your login to the Comodo GUI is at
                 https://hard.cert-manager.com/customer/foo/, your login URI is 'foo').
         :param string org_id: The organization ID
@@ -83,6 +84,8 @@ class ComodoTLSService(ComodoCA):
         :param string login: The API user
         """
         self.api_url = api_url
+        # We set a floor on the CA polling time to not create undue traffic
+        self.ca_poll_wait = ca_poll_wait if ca_poll_wait >= 60 else self.ca_poll_wait = 60
         self.customer_login_uri = customer_login_uri
         self.org_id = org_id
         self.password = password
@@ -117,7 +120,6 @@ class ComodoTLSService(ComodoCA):
         :return: A string indicating the return collected from comodo API, and a system exit code.
         :rtype: string
         """
-        poll_delay=300  # Delay in seconds to wait to poll the CA for the cert again.
 
         result = self.client.service.collect(authData=self.auth, id=self.env['CERTMONGER_CA_COOKIE'],
                                              formatType=ComodoCA.format_type['X509 PEM Certificate only'])
@@ -126,7 +128,7 @@ class ComodoTLSService(ComodoCA):
             print(result['SSL']['certificate'])
             sys.exit(0)
         elif result['statusCode'] == 0:
-            print(poll_delay)
+            print(self.ca_poll_wait)
             print(self.env['CERTMONGER_CA_COOKIE'])
             sys.exit(5)
         else:
@@ -143,10 +145,9 @@ class ComodoTLSService(ComodoCA):
         :param string cert_type_name: The full cert type name (Example: 'PlatinumSSL Certificate')
         :param string revoke_password: A password for certificate revocation
         :param int term: The length, in years, for the certificate to be issued
-        :return: A string indicating the certificate ID to be collected, and a system exit code.
+        :return: A string indicating the certificate ID to be collected (or the error message), and a system exit code.
         :rtype: string
         """
-        poll_delay = 300  # Delay in seconds to wait to poll the CA for the cert again.
 
         cert_types = self.get_cert_types()
 
@@ -163,7 +164,7 @@ class ComodoTLSService(ComodoCA):
                                             serverType=ComodoCA.formats['Apache/ModSSL'], term=term, comments='')
 
         if result > 0:
-            print(poll_delay)
+            print(self.ca_poll_wait)
             print(result)
             sys.exit(5)
         else:

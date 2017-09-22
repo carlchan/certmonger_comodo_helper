@@ -14,7 +14,8 @@ def main():
                            org_id=config.get('default', 'org_id'),
                            password=config.get('default', 'password'),
                            secret_key=config.get('default', 'secret_key'),
-                           login=config.get('default', 'login'))
+                           login=config.get('default', 'login'),
+                           ca_poll_wait=config.getint('default', 'ca_poll_wait', 60))
 
     env = get_environment()
 
