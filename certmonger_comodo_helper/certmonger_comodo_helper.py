@@ -85,7 +85,7 @@ class ComodoTLSService(ComodoCA):
         """
         self.api_url = api_url
         # We set a floor on the CA polling time to not create undue traffic
-        self.ca_poll_wait = ca_poll_wait if ca_poll_wait >= 60 else self.ca_poll_wait = 60
+        self.ca_poll_wait = ca_poll_wait if ca_poll_wait >= 60 else 60
         self.customer_login_uri = customer_login_uri
         self.org_id = org_id
         self.password = password
