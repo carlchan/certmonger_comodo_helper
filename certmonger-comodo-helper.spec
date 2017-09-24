@@ -33,14 +33,20 @@ Url: https://github.com/erinn/certmonger_comodo_helper
 
 %if 0%{?with_python3}
 %package -n python3-%{name}
+Summary:        %{sum}
 BuildRequires: python3-devel
 BuildRequires: python3-suds
 BuildRequires: python3-setuptools
+
+%description -n python3-%{name}
+%{desc}
+
 %else
+
 %package -n python2-%{name}
 Summary:        %{sum}
 BuildRequires: python2-devel
-BuildRrequires: python-setuptools
+BuildRequires: python-setuptools
 BuildRequires: python-suds
 %{?python_provide:%python_provide python2-%{name}}
 Requires: certmonger python-suds
@@ -51,6 +57,9 @@ Requires: certmonger python-suds
 
 %prep
 %setup -n %{pkg_name}-%{unmangled_version} -n %{pkg_name}-%{unmangled_version}
+%if 0%{?with_python3}
+sed -i 's/suds/suds-jurko/' setup.py
+%endif
 
 %build
 %if 0%{?with_python3}
@@ -74,7 +83,7 @@ mkdir -p $RPM_BUILD_ROOT/var/lib/certmonger/cas/
 mkdir -p $RPM_BUILD_ROOT/usr/libexec/certmonger/
 install -m 640 etc/comodo.ini $RPM_BUILD_ROOT/etc/certmonger/
 install -m 640 etc/comodo $RPM_BUILD_ROOT/var/lib/certmonger/cas/
-%end if
+%endif
 
 %check
 %if 0%{?with_python3}
