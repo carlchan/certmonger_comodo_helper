@@ -98,5 +98,5 @@ ENV/
 defaults.ini
 comodo.ini
 !/etc/comodo.ini
-!python2-certmonger-comodo-helper.spec
-!python3-certmonger-comodo-helper.spec
+!certmonger-comodo-helper.spec
+
