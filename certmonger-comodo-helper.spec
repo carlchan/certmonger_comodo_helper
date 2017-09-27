@@ -5,7 +5,7 @@
 %define name certmonger-comodo-helper
 %define version 0.2.2
 %define unmangled_version 0.2.2
-%define release 1
+%define release 2
 # The description
 %define desc The certmonger_comodo_helper is a helper for certmonger that submits and gathers certificates from the Comodo API. It is written in python and requires the suds python library, it should be compatible with both python 3 and 2.
 # The summary
@@ -101,7 +101,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc README.rst
 %{python3_sitelib}/*
 %{_libexecdir}/certmonger/certmonger_comodo_helper
-/var/lib/certmonger/cas/comodo
+%config(noreplace) /var/lib/certmonger/cas/comodo
 %config(noreplace) /etc/certmonger/comodo.ini
 %else
 %files -n python2-%{name}
@@ -109,12 +109,15 @@ rm -rf $RPM_BUILD_ROOT
 %doc README.rst
 %{python2_sitelib}/*
 %{_libexecdir}/certmonger/certmonger_comodo_helper
-/var/lib/certmonger/cas/comodo
+%config(noreplace) /var/lib/certmonger/cas/comodo
 %config(noreplace) /etc/certmonger/comodo.ini
 %endif
 
 
 %changelog
+* Tue Sep 26 2017 looneytr - 0.2.2-2
+- Make /var/lib/certmonger/cas/comodo a config file again with noreplace
+
 * Fri Sep 22 2017 looneytr - 0.2.2-1
 - New release.
 
