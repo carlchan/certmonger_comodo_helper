@@ -20,13 +20,8 @@ AUTHOR = 'Erinn Looney-Triggs'
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'suds',
+    'zeep',
 ]
-
-# The rest you shouldn't have to touch too much :)
-# ------------------------------------------------
-# Except, perhaps the License and Trove Classifiers!
-# If you do change the License, remember to change the Trove Classifier for that!
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,9 +31,7 @@ with io.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = '\n' + f.read()
 
 # Load the package's __version__.py module as a dictionary.
-about = {'__version__': '0.2.2'}
-# with open(os.path.join(here, NAME, '__version__.py')) as f:
-#     exec(f.read(), about)
+about = {'__version__': '0.3.0'}
 
 
 class PublishCommand(Command):
@@ -105,7 +98,6 @@ setup(
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
         'License :: OSI Approved :: GNU Affero General Public License v3',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',

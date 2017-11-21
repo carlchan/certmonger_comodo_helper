@@ -8,15 +8,17 @@ from certmonger_comodo_helper import *
 
 def main():
     # Set a default as it may not exist.
-    config = configparser.ConfigParser({'ca_poll_wait': '60'})
-    config.read('/etc/certmonger/comodo.ini')
+    config = configparser.ConfigParser({'api_url': 'https://hard.cert-manager.com/ws/EPKIManagerSSL?wsdl',
+                                        'ca_poll_wait': 60,
+                                        'client_cert_auth': 'false',
+                                        'password': None})
 
-    crt = ComodoTLSService(customer_login_uri=config.get('default', 'customer_login_uri'),
-                           org_id=config.get('default', 'org_id'),
-                           password=config.get('default', 'password'),
-                           secret_key=config.get('default', 'secret_key'),
-                           login=config.get('default', 'login'),
-                           ca_poll_wait=config.getint('default', 'ca_poll_wait'))
+    config.read('/etc/certmonger/comodo.ini')
+    kwargs = dict(config.items('default'))
+    # A little funny, but I want the value to come through as a bool not str.
+    kwargs['client_cert_auth'] = config.getboolean('default', 'client_cert_auth')
+
+    crt = ComodoTLSService(**kwargs)
 
     env = get_environment()
 

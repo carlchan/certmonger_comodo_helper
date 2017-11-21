@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 from __future__ import print_function
 import os
-import suds.client
+from requests import Session
 import sys
+from zeep import Client
+from zeep.transports import Transport
 
 
 def get_environment():
@@ -70,9 +72,7 @@ class ComodoTLSService(ComodoCA):
     """
 
     """
-
-    def __init__(self, customer_login_uri, org_id, password, secret_key, login,
-                 api_url='https://hard.cert-manager.com/ws/EPKIManagerSSL?wsdl', ca_poll_wait=60):
+    def __init__(self, **kwargs):
         """
         :param string api_url: The full URL for the API server
         :param int    ca_poll_wait: The period of time in seconds to wait until polling the CA for cert availability
@@ -83,16 +83,27 @@ class ComodoTLSService(ComodoCA):
         :param string secret_key: The API user's secret key
         :param string login: The API user
         """
-        self.api_url = api_url
+        # Using get for consistency and to allow defaults to be easily set
+        self.api_url = kwargs.get('api_url')
         # We set a floor on the CA polling time to not create undue traffic
-        self.ca_poll_wait = ca_poll_wait if ca_poll_wait >= 60 else 60
-        self.customer_login_uri = customer_login_uri
-        self.org_id = org_id
-        self.password = password
-        self.secret_key = secret_key
-        self.login = login
-        self.client = suds.client.Client(self.api_url)
-        self.auth = self.client.factory.create('authData')
+        self.ca_poll_wait = kwargs['ca_poll_wait'] if kwargs['ca_poll_wait'] >= 60 else 60
+        self.customer_login_uri = kwargs.get('customer_login_uri')
+        self.login = kwargs.get('login')
+        self.org_id = kwargs.get('org_id')
+        self.password = kwargs.get('password')
+        self.secret_key = kwargs.get('secret_key')
+        self.client_cert_auth = kwargs.get('client_cert_auth')
+        self.session = Session()
+        self.transport = Transport(session=self.session)
+        self.client = Client(self.api_url, transport=self.transport)
+        # Because Comodo is crap at designing APIs (in my opinion) we have to get the wsdl
+        # then modify the transport to use client certs after that.
+        if self.client_cert_auth:
+            self.client_public_certificate = kwargs.get('client_public_certificate')
+            self.client_private_key = kwargs.get('client_private_key')
+            self.session.cert = (self.client_public_certificate, self.client_private_key)
+        self.type_factory = self.client.type_factory('ns0')
+        self.auth = self.type_factory.AuthData()
         self.auth.login = self.login
         self.auth.password = self.password
         self.auth.customerLoginUri = self.customer_login_uri
