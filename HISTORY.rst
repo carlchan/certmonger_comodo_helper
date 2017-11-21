@@ -2,6 +2,12 @@
 
 History
 -------
+0.3.0 (2017-11-21)
+++++++++++++++++++
+
+* Change from suds to zeep for easier http work (based on python-requests)
+* Add the ability to do 2FA with password and certificate
+
 0.2.2 (2017-09-22)
 ++++++++++++++++++
 
